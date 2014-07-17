@@ -56,8 +56,27 @@ public class ProductResourceTest extends JerseyTest{
 
         assertThat(product.get("price"),is("23.0"));
 
-        assertThat(((String)(product.get("uri"))).contains("/products/"),is(true));
+        assertThat(((String)(product.get("uri"))).contains("/products/1"),is(true));
     }
 
 
+    @Test
+    public void should_return_200_for_get_1_product() throws Exception {
+        Product product0 = ProductBuilder.buildProduct(1, "test", 23.00);
+
+        when(mockProductRepository.getProductById(1)).thenReturn(product0);
+
+        Response response = target("/products/1").request().get();
+
+        assertThat(response.getStatus(),is(200));
+
+        Map product = response.readEntity(Map.class);
+
+        assertThat(product.get("name"), is("test"));
+
+        assertThat(product.get("price"),is("23.0"));
+
+        assertThat(((String)(product.get("uri"))).contains("/products/1"),is(true));
+
+    }
 }
