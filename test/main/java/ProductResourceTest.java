@@ -1,4 +1,5 @@
 import domain.Product;
+import domain.ProductBuilder;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.test.JerseyTest;
@@ -38,7 +39,8 @@ public class ProductResourceTest extends JerseyTest{
 
     @Test
     public void should_return_200_for_get_all_products() throws Exception {
-        when(mockProductRepository.getAllProducts()).thenReturn(Arrays.asList(new Product("test",23.00)));
+        Product product0 = ProductBuilder.buildProduct(1, "test", 23.00);
+        when(mockProductRepository.getAllProducts()).thenReturn(Arrays.asList(product0));
 
         Response response = target("/products").request().get();
 
@@ -50,10 +52,12 @@ public class ProductResourceTest extends JerseyTest{
 
         Map product = (Map) result.get(0);
 
-        assertThat(product.get("name"),is("test"));
+        assertThat(product.get("name"), is("test"));
 
         assertThat(product.get("price"),is("23.0"));
 
         assertThat(((String)(product.get("uri"))).contains("/products/"),is(true));
     }
+
+
 }

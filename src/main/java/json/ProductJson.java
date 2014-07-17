@@ -26,7 +26,4 @@ public class ProductJson {
         return String.valueOf(product.getPrice());
     }
 
-    public String getProductId(){
-        return String.valueOf(product.getProductId());
-    }
 }
