@@ -1,5 +1,7 @@
 import domain.Product;
 import domain.ProductBuilder;
+import exception.RecordNotFoundException;
+import exception.RecordNotFoundExceptionHandler;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.test.JerseyTest;
@@ -34,7 +36,7 @@ public class ProductResourceTest extends JerseyTest{
             }
         };
 
-        return new ResourceConfig().register(ProductResource.class).register(binder);
+        return new ResourceConfig().register(ProductResource.class).register(binder).register(RecordNotFoundExceptionHandler.class);
     }
 
     @Test
@@ -78,5 +80,16 @@ public class ProductResourceTest extends JerseyTest{
 
         assertThat(((String)(product.get("uri"))).contains("/products/1"),is(true));
 
+    }
+
+
+    @Test
+    public void should_return_404_for_get_1_product_failed() throws Exception {
+
+        when(mockProductRepository.getProductById(1)).thenThrow(RecordNotFoundException.class);
+
+        Response response = target("/products/1").request().get();
+
+        assertThat(response.getStatus(),is(404));
     }
 }
