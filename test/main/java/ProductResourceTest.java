@@ -7,12 +7,16 @@ import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.test.JerseyTest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import repository.ProductRepository;
 import resources.ProductResource;
 
+import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Application;
+import javax.ws.rs.core.Form;
 import javax.ws.rs.core.Response;
 import java.util.Arrays;
 import java.util.List;
@@ -20,6 +24,7 @@ import java.util.Map;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 
@@ -27,6 +32,10 @@ import static org.mockito.Mockito.when;
 public class ProductResourceTest extends JerseyTest{
     @Mock
     ProductRepository mockProductRepository;
+
+    @Captor
+    ArgumentCaptor<Product> productArgumentCaptor;
+
     @Override
     protected Application configure() {
         AbstractBinder binder = new AbstractBinder() {
@@ -92,4 +101,19 @@ public class ProductResourceTest extends JerseyTest{
 
         assertThat(response.getStatus(),is(404));
     }
+
+
+    @Test
+    public void should_return_201_for_post_one_product() throws Exception {
+        Response response = target("/products").request().post(Entity.form(new Form().param("name", "test").param("price", "45")));
+
+        verify(mockProductRepository).save(productArgumentCaptor.capture());
+
+        assertThat(response.getStatus(), is(201));
+
+        assertThat(productArgumentCaptor.getValue().getName(),is("test"));
+        assertThat(productArgumentCaptor.getValue().getPrice(),is(45.0));
+
+    }
+
 }
