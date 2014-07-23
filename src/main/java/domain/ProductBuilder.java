@@ -1,8 +1,15 @@
 package domain;
 
 public class ProductBuilder {
-    public static Product buildProduct(int id, String name, double price) {
 
-        return new Product(name, price, id);
+    public static Product buildProduct(int id, String name) {
+        return new Product(name,id);
     }
+
+    public static Product buildPricing(Product product, Pricing pricing){
+        product.setPrice(pricing);
+
+        return product;
+    }
+
 }

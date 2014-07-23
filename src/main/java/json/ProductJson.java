@@ -23,7 +23,7 @@ public class ProductJson {
     }
 
     public String getPrice(){
-        return String.valueOf(product.getPrice());
+        return String.valueOf(product.getPrice().getAmount());
     }
 
 }

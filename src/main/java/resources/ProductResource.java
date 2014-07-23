@@ -1,5 +1,6 @@
 package resources;
 
+import domain.Pricing;
 import domain.Product;
 import json.ProductJson;
 import repository.ProductRepository;
@@ -29,8 +30,9 @@ public class ProductResource {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response saveProduct(@Context UriInfo uriInfo, Form form) {
         String name = form.asMap().getFirst("name");
-        String price = form.asMap().getFirst("price");
-        Product productCreated = new Product(name, Double.valueOf(price).doubleValue());
+        String priceValue = form.asMap().getFirst("price");
+        Pricing pricing = new Pricing(Double.valueOf(priceValue).doubleValue());
+        Product productCreated = new Product(name,pricing);
         productRepository.save(productCreated);
 
         return Response.created(URI.create(uriInfo.getBaseUri()+"/products/"+productCreated.getId())).build();
@@ -44,5 +46,12 @@ public class ProductResource {
         Product productById = productRepository.getProductById(id);
 
         return new ProductJson(productById, uriInfo);
+    }
+
+    @Path("/{id}/pricings")
+    public PricingResource getPricingResource(@PathParam("id") int id, @Context UriInfo uriInfo) {
+        Product productById = productRepository.getProductById(id);
+
+        return new PricingResource(productById,uriInfo);
     }
 }

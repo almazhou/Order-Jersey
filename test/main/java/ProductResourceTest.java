@@ -1,3 +1,5 @@
+import domain.PriceBuilder;
+import domain.Pricing;
 import domain.Product;
 import domain.ProductBuilder;
 import exception.RecordNotFoundException;
@@ -5,6 +7,7 @@ import exception.RecordNotFoundExceptionHandler;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.test.JerseyTest;
+import org.joda.time.DateTime;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -26,6 +29,7 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
 
 
 @RunWith(MockitoJUnitRunner.class)
@@ -50,7 +54,8 @@ public class ProductResourceTest extends JerseyTest{
 
     @Test
     public void should_return_200_for_get_all_products() throws Exception {
-        Product product0 = ProductBuilder.buildProduct(1, "test", 23.00);
+
+        Product product0 = ProductBuilder.buildProduct(1, "test");
         when(mockProductRepository.getAllProducts()).thenReturn(Arrays.asList(product0));
 
         Response response = target("/products").request().get();
@@ -73,7 +78,7 @@ public class ProductResourceTest extends JerseyTest{
 
     @Test
     public void should_return_200_for_get_1_product() throws Exception {
-        Product product0 = ProductBuilder.buildProduct(1, "test", 23.00);
+        Product product0 = ProductBuilder.buildProduct(1, "test");
 
         when(mockProductRepository.getProductById(1)).thenReturn(product0);
 
@@ -116,4 +121,32 @@ public class ProductResourceTest extends JerseyTest{
 
     }
 
+
+    @Test
+    public void should_return_200_for_get_all_pricings() throws Exception {
+        Pricing pricing = PriceBuilder.buildPricing(1, 34, new DateTime(2014, 5, 6, 0, 0));
+
+        Product product_created = ProductBuilder.buildProduct(1, "test");
+
+        ProductBuilder.buildPricing(product_created,pricing);
+
+        when(mockProductRepository.getProductById(1)).thenReturn(product_created);
+
+        Response response = target("/products/1/pricings").request().get();
+
+        assertThat(response.getStatus(),is(200));
+
+        List list = response.readEntity(List.class);
+
+        Map pricingOne = (Map) list.get(0);
+
+        assertThat(pricingOne.get("price"),is("34.0"));
+
+        assertThat(((String)(pricingOne.get("date"))).contains("2014-05-06"),is(true));
+
+        assertThat(pricingOne.get("productId"),is("1"));
+
+        assertThat(pricingOne.get("uri"),is("/products/1/pricings/1"));
+
+    }
 }

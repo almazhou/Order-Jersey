@@ -1,18 +1,27 @@
 package domain;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Product {
     private int id;
     private String name;
-    private double price;
+    private Pricing price;
+    private List<Pricing> pricings = new ArrayList<Pricing>();
 
-    public Product(String name, double price) {
+    public Product(String name, Pricing price) {
         this.name = name;
         this.price = price;
+        pricings.add(price);
     }
 
-    protected Product(String name, double price, int id) {
+    public Product() {
+
+    }
+
+    public Product(String name, int id) {
+
         this.name = name;
-        this.price = price;
         this.id = id;
     }
 
@@ -24,8 +33,16 @@ public class Product {
         return name;
     }
 
-    public double getPrice() {
+    public Pricing getPrice() {
         return price;
     }
 
+    public List<Pricing> getPricings() {
+        return pricings;
+    }
+
+    public void setPrice(Pricing pricing) {
+        price = pricing;
+        pricings.add(pricing);
+    }
 }
