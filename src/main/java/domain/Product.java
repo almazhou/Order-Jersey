@@ -1,5 +1,7 @@
 package domain;
 
+import exception.RecordNotFoundException;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
@@ -56,6 +58,9 @@ public class Product {
             }
         }).collect(Collectors.toList());
 
-        return findList.size() == 0 ? null : findList.get(0);
+        if(findList.size() == 0){
+            throw new RecordNotFoundException();
+        }
+        return findList.get(0);
     }
 }

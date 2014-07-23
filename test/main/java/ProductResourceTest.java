@@ -176,4 +176,17 @@ public class ProductResourceTest extends JerseyTest{
         assertThat(pricingOne.get("uri"),is("/products/1/pricings/1"));
 
     }
+
+
+    @Test
+    public void should_return_404_for_get_one_pricing() throws Exception {
+        Product product_created = ProductBuilder.buildProduct(1, "test");
+
+        when(mockProductRepository.getProductById(1)).thenReturn(product_created);
+
+        Response response = target("/products/1/pricings/1").request().get();
+
+        assertThat(response.getStatus(),is(404));
+
+    }
 }
