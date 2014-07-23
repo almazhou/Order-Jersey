@@ -2,6 +2,8 @@ package domain;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 public class Product {
     private int id;
@@ -44,5 +46,16 @@ public class Product {
     public void setPrice(Pricing pricing) {
         price = pricing;
         pricings.add(pricing);
+    }
+
+    public Pricing getPriceById(int priceId) {
+        List<Pricing> findList = pricings.stream().filter(new Predicate<Pricing>() {
+            @Override
+            public boolean test(Pricing pricing) {
+                return pricing.getId() == priceId;
+            }
+        }).collect(Collectors.toList());
+
+        return findList.size() == 0 ? null : findList.get(0);
     }
 }

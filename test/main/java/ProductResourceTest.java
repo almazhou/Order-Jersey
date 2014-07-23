@@ -149,4 +149,31 @@ public class ProductResourceTest extends JerseyTest{
         assertThat(pricingOne.get("uri"),is("/products/1/pricings/1"));
 
     }
+
+
+    @Test
+    public void should_return_200_for_get_one_pricing() throws Exception {
+        Pricing pricing = PriceBuilder.buildPricing(1, 34, new DateTime(2014, 5, 6, 0, 0));
+
+        Product product_created = ProductBuilder.buildProduct(1, "test");
+
+        ProductBuilder.buildPricing(product_created,pricing);
+
+        when(mockProductRepository.getProductById(1)).thenReturn(product_created);
+
+        Response response = target("/products/1/pricings/1").request().get();
+
+        assertThat(response.getStatus(),is(200));
+
+        Map pricingOne = response.readEntity(Map.class);
+
+        assertThat(pricingOne.get("price"),is("34.0"));
+
+        assertThat(((String)(pricingOne.get("date"))).contains("2014-05-06"),is(true));
+
+        assertThat(pricingOne.get("productId"),is("1"));
+
+        assertThat(pricingOne.get("uri"),is("/products/1/pricings/1"));
+
+    }
 }
