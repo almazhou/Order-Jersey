@@ -18,6 +18,7 @@ dependencies {
 
     compile "org.glassfish.jersey.media:jersey-media-json-jackson:$jerseyVersion"
     compile 'joda-time:joda-time:2.3'
+    compile 'org.mongodb.morphia:morphia:0.108'
 
     testCompile 'junit:junit:4.10'
     testCompile "org.glassfish.jersey.test-framework:jersey-test-framework-core:$jerseyVersion"

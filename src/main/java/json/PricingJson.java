@@ -7,29 +7,36 @@ import javax.ws.rs.core.UriInfo;
 
 public class PricingJson {
     private final Product product;
-    private final Pricing pricing;
     private final UriInfo uriInfo;
 
-    public PricingJson(Product product, Pricing pricing, UriInfo uriInfo) {
-
+    public PricingJson(Product product, UriInfo uriInfo) {
         this.product = product;
-        this.pricing = pricing;
         this.uriInfo = uriInfo;
     }
 
-    public String getUri(){
-        return "/products/"+product.getId()+"/pricings/"+pricing.getId();
+    public Pricing getPricing(){
+        return product.getPrice();
     }
 
-    public String getProductId(){
-        return String.valueOf(product.getId());
+    public String getUri() {
+        return uriInfo.getBaseUri() + "products/" + getProductId() + "/pricings/" + getPricingId();
     }
 
-    public String getPrice(){
-        return String.valueOf(pricing.getAmount());
+    private String getPricingId() {
+        Pricing pricing = getPricing();
+        if(pricing == null || pricing.getId() == null) return "";
+        return pricing.getId().toString();
     }
 
-    public String getDate(){
-        return String.valueOf(pricing.getModifiedTime());
+    public String getProductId() {
+        return product.getId().toString();
+    }
+
+    public String getPrice() {
+        return String.valueOf(getPricing().getAmount());
+    }
+
+    public String getDate() {
+        return String.valueOf(getPricing().getModifiedTime());
     }
 }

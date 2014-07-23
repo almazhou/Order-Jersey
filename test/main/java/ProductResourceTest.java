@@ -31,9 +31,11 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 
-
 @RunWith(MockitoJUnitRunner.class)
-public class ProductResourceTest extends JerseyTest{
+public class ProductResourceTest extends JerseyTest {
+    private final String PROUDCT_ID = "1234567890abcdef90567889";
+
+    private final String PRICING_ID = "1234567890abcdef90567889";
     @Mock
     ProductRepository mockProductRepository;
 
@@ -54,15 +56,17 @@ public class ProductResourceTest extends JerseyTest{
 
     @Test
     public void should_return_200_for_get_all_products() throws Exception {
+        Product product0 = ProductBuilder.buildProduct(PROUDCT_ID, "test");
 
-        Product product0 = ProductBuilder.buildProduct(1, "test");
+        Pricing pricing = PriceBuilder.buildPricing(PRICING_ID, 45.0, new DateTime());
+
+        ProductBuilder.buildPricing(product0,pricing);
+
         when(mockProductRepository.getAllProducts()).thenReturn(Arrays.asList(product0));
 
         Response response = target("/products").request().get();
 
-        assertThat(1,is(1));
-
-        assertThat(response.getStatus(),is(200));
+        assertThat(response.getStatus(), is(200));
 
         List result = response.readEntity(List.class);
 
@@ -70,29 +74,33 @@ public class ProductResourceTest extends JerseyTest{
 
         assertThat(product.get("name"), is("test"));
 
-        assertThat(product.get("price"),is("23.0"));
+        assertThat(product.get("price"), is("45.0"));
 
-        assertThat(((String)(product.get("uri"))).contains("/products/1"),is(true));
+        assertThat(((String) (product.get("uri"))).contains("/products/"+PROUDCT_ID), is(true));
     }
 
 
     @Test
     public void should_return_200_for_get_1_product() throws Exception {
-        Product product0 = ProductBuilder.buildProduct(1, "test");
+        Product product0 = ProductBuilder.buildProduct(PROUDCT_ID, "test");
 
-        when(mockProductRepository.getProductById(1)).thenReturn(product0);
+        Pricing pricing = PriceBuilder.buildPricing(PRICING_ID, 23.0, new DateTime());
 
-        Response response = target("/products/1").request().get();
+        ProductBuilder.buildPricing(product0,pricing);
 
-        assertThat(response.getStatus(),is(200));
+        when(mockProductRepository.getProductById(PROUDCT_ID)).thenReturn(product0);
+
+        Response response = target("/products/"+PROUDCT_ID).request().get();
+
+        assertThat(response.getStatus(), is(200));
 
         Map product = response.readEntity(Map.class);
 
         assertThat(product.get("name"), is("test"));
 
-        assertThat(product.get("price"),is("23.0"));
+        assertThat(product.get("price"), is("23.0"));
 
-        assertThat(((String)(product.get("uri"))).contains("/products/1"),is(true));
+        assertThat(((String) (product.get("uri"))).contains("/products/"+PROUDCT_ID), is(true));
 
     }
 
@@ -100,11 +108,11 @@ public class ProductResourceTest extends JerseyTest{
     @Test
     public void should_return_404_for_get_1_product_failed() throws Exception {
 
-        when(mockProductRepository.getProductById(1)).thenThrow(RecordNotFoundException.class);
+        when(mockProductRepository.getProductById(PROUDCT_ID)).thenThrow(RecordNotFoundException.class);
 
-        Response response = target("/products/1").request().get();
+        Response response = target("/products/" + PROUDCT_ID).request().get();
 
-        assertThat(response.getStatus(),is(404));
+        assertThat(response.getStatus(), is(404));
     }
 
 
@@ -116,94 +124,97 @@ public class ProductResourceTest extends JerseyTest{
 
         assertThat(response.getStatus(), is(201));
 
-        assertThat(productArgumentCaptor.getValue().getName(),is("test"));
-        assertThat(productArgumentCaptor.getValue().getPrice(),is(45.0));
+        assertThat(productArgumentCaptor.getValue().getName(), is("test"));
+        System.out.println(productArgumentCaptor.getValue().getPrice().getAmount());
+        assertThat(productArgumentCaptor.getValue().getPrice().getAmount(), is(45.0));
 
     }
 
 
     @Test
     public void should_return_200_for_get_all_pricings() throws Exception {
-        Pricing pricing = PriceBuilder.buildPricing(1, 34, new DateTime(2014, 5, 6, 0, 0));
+        Pricing pricing = PriceBuilder.buildPricing(PROUDCT_ID, 34, new DateTime(2014, 5, 6, 0, 0));
 
-        Product product_created = ProductBuilder.buildProduct(1, "test");
+        Product product_created = ProductBuilder.buildProduct(PROUDCT_ID, "test");
 
-        ProductBuilder.buildPricing(product_created,pricing);
+        ProductBuilder.buildPricing(product_created, pricing);
 
-        when(mockProductRepository.getProductById(1)).thenReturn(product_created);
+        when(mockProductRepository.getProductById(PROUDCT_ID)).thenReturn(product_created);
 
-        Response response = target("/products/1/pricings").request().get();
+        Response response = target("/products/" + PROUDCT_ID + "/pricings").request().get();
 
-        assertThat(response.getStatus(),is(200));
+        assertThat(response.getStatus(), is(200));
 
         List list = response.readEntity(List.class);
 
         Map pricingOne = (Map) list.get(0);
 
-        assertThat(pricingOne.get("price"),is("34.0"));
+        assertThat(pricingOne.get("price"), is("34.0"));
 
         assertThat(((String) (pricingOne.get("date"))).contains("2014-05-06"), is(true));
 
-        assertThat(pricingOne.get("productId"),is("1"));
+        assertThat(pricingOne.get("productId"), is(PROUDCT_ID));
 
-        assertThat(pricingOne.get("uri"),is("/products/1/pricings/1"));
+        String uri = (String) pricingOne.get("uri");
+        assertThat(uri.contains("/products/"+PROUDCT_ID+"/pricings/"+PRICING_ID),is(true));
 
     }
 
 
     @Test
     public void should_return_200_for_get_one_pricing() throws Exception {
-        Pricing pricing = PriceBuilder.buildPricing(1, 34, new DateTime(2014, 5, 6, 0, 0));
+        Pricing pricing = PriceBuilder.buildPricing(PROUDCT_ID, 34, new DateTime(2014, 5, 6, 0, 0));
 
-        Product product_created = ProductBuilder.buildProduct(1, "test");
+        Product product_created = ProductBuilder.buildProduct(PROUDCT_ID, "test");
 
-        ProductBuilder.buildPricing(product_created,pricing);
+        ProductBuilder.buildPricing(product_created, pricing);
 
-        when(mockProductRepository.getProductById(1)).thenReturn(product_created);
+        when(mockProductRepository.getProductById(PROUDCT_ID)).thenReturn(product_created);
 
-        Response response = target("/products/1/pricings/1").request().get();
+        Response response = target("/products/" + PROUDCT_ID + "/pricings/" + PRICING_ID).request().get();
 
-        assertThat(response.getStatus(),is(200));
+        assertThat(response.getStatus(), is(200));
 
         Map pricingOne = response.readEntity(Map.class);
 
-        assertThat(pricingOne.get("price"),is("34.0"));
+        assertThat(pricingOne.get("price"), is("34.0"));
 
-        assertThat(((String)(pricingOne.get("date"))).contains("2014-05-06"),is(true));
+        assertThat(((String) (pricingOne.get("date"))).contains("2014-05-06"), is(true));
 
-        assertThat(pricingOne.get("productId"),is("1"));
+        assertThat(pricingOne.get("productId"), is(PROUDCT_ID));
 
-        assertThat(pricingOne.get("uri"),is("/products/1/pricings/1"));
+        String uri = (String) pricingOne.get("uri");
+        assertThat(uri.contains("/products/" + PROUDCT_ID + "/pricings/" + PRICING_ID),is(true));
 
     }
 
 
     @Test
     public void should_return_404_for_get_one_pricing() throws Exception {
-        Product product_created = ProductBuilder.buildProduct(1, "test");
+        Product product_created = ProductBuilder.buildProduct(PROUDCT_ID, "test");
 
-        when(mockProductRepository.getProductById(1)).thenReturn(product_created);
+        when(mockProductRepository.getProductById(PROUDCT_ID)).thenReturn(product_created);
 
-        Response response = target("/products/1/pricings/1").request().get();
+        Response response = target("/products/" + PROUDCT_ID + "/pricings/" + PRICING_ID).request().get();
 
-        assertThat(response.getStatus(),is(404));
+        assertThat(response.getStatus(), is(404));
 
     }
 
 
     @Test
     public void should_return_201_for_post_one_pricing() throws Exception {
-        Product product_created = ProductBuilder.buildProduct(1, "test");
+        Product product_created = ProductBuilder.buildProduct(PROUDCT_ID, "test");
 
-        when(mockProductRepository.getProductById(1)).thenReturn(product_created);
+        when(mockProductRepository.getProductById(PROUDCT_ID)).thenReturn(product_created);
 
-        Response response = target("/products/1/pricings").request().post(Entity.form(new Form().param("amount", "45")));
+        Response response = target("/products/" + PROUDCT_ID + "/pricings").request().post(Entity.form(new Form().param("amount", "45")));
 
-        assertThat(response.getStatus(),is(201));
+        assertThat(response.getStatus(), is(201));
 
         String location = response.getHeaderString("location");
 
-        assertThat(location.contains("/products/1/pricings/"),is(true));
+        assertThat(location.contains("/products/" + PROUDCT_ID + "/pricings/"), is(true));
 
 
     }

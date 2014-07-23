@@ -28,7 +28,7 @@ public class PricingResource {
     public List<PricingJson> getAllPricings(){
         List<Pricing> pricings = product.getPricings();
 
-        return pricings.stream().map(pricing -> new PricingJson(product,pricing,uriInfo)).collect(Collectors.toList());
+        return pricings.stream().map(pricing -> new PricingJson(product, uriInfo)).collect(Collectors.toList());
     }
 
     @POST
@@ -40,15 +40,15 @@ public class PricingResource {
 
         product.addPrice(pricing);
 
-        return Response.created(URI.create(new PricingJson(product,pricing,uriInfo).getUri())).build();
+        return Response.created(URI.create(new PricingJson(product, uriInfo).getUri())).build();
     }
 
     @GET
     @Path("/{priceId}")
     @Produces(MediaType.APPLICATION_JSON)
-    public PricingJson getPricingById(@PathParam("priceId") int priceId){
+    public PricingJson getPricingById(@PathParam("priceId") String priceId){
         Pricing pricing = product.getPriceById(priceId);
 
-        return new PricingJson(product,pricing,uriInfo);
+        return new PricingJson(product, uriInfo);
     }
 }

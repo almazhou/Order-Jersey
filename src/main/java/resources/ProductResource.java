@@ -42,14 +42,14 @@ public class ProductResource {
     @GET
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public ProductJson getProductById(@PathParam("id") int id, @Context UriInfo uriInfo) {
+    public ProductJson getProductById(@PathParam("id") String id, @Context UriInfo uriInfo) {
         Product productById = productRepository.getProductById(id);
 
         return new ProductJson(productById, uriInfo);
     }
 
     @Path("/{id}/pricings")
-    public PricingResource getPricingResource(@PathParam("id") int id, @Context UriInfo uriInfo) {
+    public PricingResource getPricingResource(@PathParam("id") String id, @Context UriInfo uriInfo) {
         Product productById = productRepository.getProductById(id);
 
         return new PricingResource(productById,uriInfo);

@@ -1,18 +1,19 @@
 package domain;
 
+import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 
 public class Pricing {
 
     private double amount;
-    private int id;
+    private ObjectId id;
     private DateTime modifiedTime;
 
     public Pricing(double amount) {
         this.amount = amount;
     }
 
-    public Pricing(int id, double amount, DateTime modifiedTime) {
+    public Pricing(ObjectId id, double amount, DateTime modifiedTime) {
 
         this.id = id;
         this.amount = amount;
@@ -24,7 +25,7 @@ public class Pricing {
         return amount;
     }
 
-    public int getId() {
+    public ObjectId getId() {
         return id;
     }
 
