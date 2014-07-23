@@ -58,7 +58,7 @@ public class Product {
             }
         }).collect(Collectors.toList());
 
-        if(findList.size() == 0){
+        if(findList.size() == 0 || findList.get(0) == null){
             throw new RecordNotFoundException();
         }
         return findList.get(0);
