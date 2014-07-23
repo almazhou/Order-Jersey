@@ -7,7 +7,7 @@ public class ProductBuilder {
     }
 
     public static Product buildPricing(Product product, Pricing pricing){
-        product.setPrice(pricing);
+        product.addPrice(pricing);
 
         return product;
     }

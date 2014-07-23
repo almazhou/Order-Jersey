@@ -45,7 +45,7 @@ public class Product {
         return pricings;
     }
 
-    public void setPrice(Pricing pricing) {
+    public void addPrice(Pricing pricing) {
         price = pricing;
         pricings.add(pricing);
     }

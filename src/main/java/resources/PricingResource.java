@@ -4,12 +4,12 @@ import domain.Pricing;
 import domain.Product;
 import json.PricingJson;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
+import javax.ws.rs.core.Form;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
+import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,6 +29,18 @@ public class PricingResource {
         List<Pricing> pricings = product.getPricings();
 
         return pricings.stream().map(pricing -> new PricingJson(product,pricing,uriInfo)).collect(Collectors.toList());
+    }
+
+    @POST
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    public Response postPricing(Form form){
+        String amount = form.asMap().getFirst("amount");
+
+        Pricing pricing = new Pricing(Double.valueOf(amount).doubleValue());
+
+        product.addPrice(pricing);
+
+        return Response.created(URI.create(new PricingJson(product,pricing,uriInfo).getUri())).build();
     }
 
     @GET

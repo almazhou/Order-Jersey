@@ -142,7 +142,7 @@ public class ProductResourceTest extends JerseyTest{
 
         assertThat(pricingOne.get("price"),is("34.0"));
 
-        assertThat(((String)(pricingOne.get("date"))).contains("2014-05-06"),is(true));
+        assertThat(((String) (pricingOne.get("date"))).contains("2014-05-06"), is(true));
 
         assertThat(pricingOne.get("productId"),is("1"));
 
@@ -187,6 +187,24 @@ public class ProductResourceTest extends JerseyTest{
         Response response = target("/products/1/pricings/1").request().get();
 
         assertThat(response.getStatus(),is(404));
+
+    }
+
+
+    @Test
+    public void should_return_201_for_post_one_pricing() throws Exception {
+        Product product_created = ProductBuilder.buildProduct(1, "test");
+
+        when(mockProductRepository.getProductById(1)).thenReturn(product_created);
+
+        Response response = target("/products/1/pricings").request().post(Entity.form(new Form().param("amount", "45")));
+
+        assertThat(response.getStatus(),is(201));
+
+        String location = response.getHeaderString("location");
+
+        assertThat(location.contains("/products/1/pricings/"),is(true));
+
 
     }
 }
