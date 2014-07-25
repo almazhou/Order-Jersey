@@ -27,6 +27,8 @@ public class ProductMapperTest {
         productMapper.save(product);
         List<Product> allProducts = productMapper.getAllProducts();
         assertThat(allProducts.size(),is(1));
+        assertThat(allProducts.get(0).getPrice().getAmount(),is(45.0));
+        assertThat(allProducts.get(0).getPricings().size(),is(1));
     }
 
     @Test
@@ -36,6 +38,7 @@ public class ProductMapperTest {
         productMapper.save(product);
         Product productById = productMapper.getProductById(product.getId().toString());
         assertThat(productById.getName(),is("test"));
+        assertThat(productById.getPrice().getAmount(),is(45.0));
     }
 
     @Test
