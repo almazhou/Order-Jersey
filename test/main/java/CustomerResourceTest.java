@@ -1,4 +1,5 @@
 import exception.RecordNotFoundException;
+import org.bson.types.ObjectId;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.test.JerseyTest;
@@ -24,6 +25,8 @@ import static org.mockito.Mockito.when;
 public class CustomerResourceTest extends JerseyTest {
     @Mock
     CustomerRepository mockCustomerRepository;
+    private String CUSTOMER_ID = "1234567890efabcd34567892";
+
 
     @Override
     protected Application configure() {
@@ -38,8 +41,9 @@ public class CustomerResourceTest extends JerseyTest {
 
     @Test
     public void should_return_200_for_get_all_customers() throws Exception {
-        Customer customer = new Customer("address","customer");
+        Customer customer = new Customer(new ObjectId(CUSTOMER_ID),"customer","address");
         when(mockCustomerRepository.getAllCustomers()).thenReturn(Arrays.asList(customer));
+
         Response response = target("/customers").request().get();
 
         assertThat(response.getStatus(),is(200));
@@ -50,6 +54,8 @@ public class CustomerResourceTest extends JerseyTest {
 
         assertThat(gotCustomer.get("name"),is("customer"));
         assertThat(gotCustomer.get("address"),is("address"));
+        String uri = (String) gotCustomer.get("uri");
+        assertThat(uri.contains("/customers/"+customer.getId()),is(true));
 
     }
 }
