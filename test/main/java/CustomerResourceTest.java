@@ -1,4 +1,5 @@
 import exception.RecordNotFoundException;
+import exception.RecordNotFoundExceptionHandler;
 import org.bson.types.ObjectId;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.server.ResourceConfig;
@@ -36,7 +37,7 @@ public class CustomerResourceTest extends JerseyTest {
                 bind(mockCustomerRepository).to(CustomerRepository.class);
             }
         };
-        return new ResourceConfig().register(CustomerResource.class).register(RecordNotFoundException.class).register(abstractBinder);
+        return new ResourceConfig().register(CustomerResource.class).register(RecordNotFoundExceptionHandler.class).register(abstractBinder);
     }
 
     @Test
@@ -74,6 +75,16 @@ public class CustomerResourceTest extends JerseyTest {
         assertThat(gotCustomer.get("address"),is("address"));
         String uri = (String) gotCustomer.get("uri");
         assertThat(uri.contains("/customers/"+customer.getId()),is(true));
+
+    }
+
+    @Test
+    public void should_return_404_for_get_customer_not_exist() throws Exception {
+        when(mockCustomerRepository.getCustomerWithId(CUSTOMER_ID)).thenThrow(RecordNotFoundException.class);
+
+        Response response = target("/customers/" + CUSTOMER_ID).request().get();
+
+        assertThat(response.getStatus(),is(404));
 
     }
 }
