@@ -13,6 +13,8 @@ import resources.CustomerResource;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.Response;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
@@ -36,12 +38,18 @@ public class CustomerResourceTest extends JerseyTest {
 
     @Test
     public void should_return_200_for_get_all_customers() throws Exception {
-        Customer customer = new Customer("customer","address");
+        Customer customer = new Customer("address","customer");
         when(mockCustomerRepository.getAllCustomers()).thenReturn(Arrays.asList(customer));
         Response response = target("/customers").request().get();
 
         assertThat(response.getStatus(),is(200));
 
+        List list = response.readEntity(List.class);
+
+        Map gotCustomer = (Map) list.get(0);
+
+        assertThat(gotCustomer.get("name"),is("customer"));
+        assertThat(gotCustomer.get("address"),is("address"));
 
     }
 }
