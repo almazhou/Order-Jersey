@@ -11,7 +11,6 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 @Entity("products")
 public class Product {
-
     @Id
     private ObjectId id;
     private String name;

@@ -20,6 +20,8 @@ public class Pricing {
         this.modifiedTime = modifiedTime;
     }
 
+    public Pricing() {
+    }
 
     public double getAmount() {
         return amount;

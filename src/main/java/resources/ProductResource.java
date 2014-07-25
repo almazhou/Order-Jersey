@@ -43,6 +43,7 @@ public class ProductResource {
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public ProductJson getProductById(@PathParam("id") String id, @Context UriInfo uriInfo) {
+
         Product productById = productRepository.getProductById(id);
 
         return new ProductJson(productById, uriInfo);
