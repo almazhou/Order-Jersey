@@ -58,4 +58,22 @@ public class CustomerResourceTest extends JerseyTest {
         assertThat(uri.contains("/customers/"+customer.getId()),is(true));
 
     }
+
+    @Test
+    public void should_return_200_for_get_one_customers() throws Exception {
+        Customer customer = new Customer(new ObjectId(CUSTOMER_ID),"customer","address");
+        when(mockCustomerRepository.getCustomerWithId(CUSTOMER_ID)).thenReturn(customer);
+
+        Response response = target("/customers/" + CUSTOMER_ID).request().get();
+
+        assertThat(response.getStatus(),is(200));
+
+        Map gotCustomer = response.readEntity(Map.class);
+
+        assertThat(gotCustomer.get("name"),is("customer"));
+        assertThat(gotCustomer.get("address"),is("address"));
+        String uri = (String) gotCustomer.get("uri");
+        assertThat(uri.contains("/customers/"+customer.getId()),is(true));
+
+    }
 }

@@ -6,6 +6,7 @@ import repository.CustomerRepository;
 import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -21,11 +22,20 @@ public class CustomerResource {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public List<CustomerJson> getAllCustomers(@Context UriInfo uriInfo){
+    public List<CustomerJson> getAllCustomers(@Context UriInfo uriInfo) {
         List<Customer> allCustomers = customerRepository.getAllCustomers();
 
         List<CustomerJson> customerJsons = allCustomers.stream().map(customer -> new CustomerJson(customer, uriInfo)).collect(Collectors.toList());
 
         return customerJsons;
+    }
+
+    @GET
+    @Path("/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public CustomerJson getCustomerWithId(@PathParam("id") String id, @Context UriInfo uriInfo) {
+        Customer customerWithId = customerRepository.getCustomerWithId(id);
+
+        return new CustomerJson(customerWithId, uriInfo);
     }
 }
