@@ -4,13 +4,9 @@ import json.CustomerJson;
 import repository.CustomerRepository;
 
 import javax.inject.Inject;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.*;
+import javax.ws.rs.core.*;
+import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,6 +24,18 @@ public class CustomerResource {
         List<CustomerJson> customerJsons = allCustomers.stream().map(customer -> new CustomerJson(customer, uriInfo)).collect(Collectors.toList());
 
         return customerJsons;
+    }
+
+    @POST
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    public Response saveCustomer(@Context UriInfo uriInfo, Form form) {
+        String name = form.asMap().getFirst("name");
+        String address = form.asMap().getFirst("address");
+        Customer customer = new Customer(address, name);
+
+        customerRepository.save(customer);
+
+        return Response.created(URI.create(uriInfo.getBaseUri()+"customers/"+ customer.getId())).build();
     }
 
     @GET

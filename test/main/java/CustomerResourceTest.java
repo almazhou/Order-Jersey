@@ -6,13 +6,17 @@ import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.test.JerseyTest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import repository.CustomerRepository;
 import resources.Customer;
 import resources.CustomerResource;
 
+import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Application;
+import javax.ws.rs.core.Form;
 import javax.ws.rs.core.Response;
 import java.util.Arrays;
 import java.util.List;
@@ -20,12 +24,17 @@ import java.util.Map;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CustomerResourceTest extends JerseyTest {
     @Mock
     CustomerRepository mockCustomerRepository;
+
+    @Captor
+    ArgumentCaptor<Customer> customerArgumentCaptor;
+
     private String CUSTOMER_ID = "1234567890efabcd34567892";
 
 
@@ -85,6 +94,21 @@ public class CustomerResourceTest extends JerseyTest {
         Response response = target("/customers/" + CUSTOMER_ID).request().get();
 
         assertThat(response.getStatus(),is(404));
+
+    }
+
+    @Test
+    public void should_return_201_for_post_one_customer() throws Exception {
+
+        Response response = target("/customers").request().post(Entity.form(((new Form().param("name", "customer").param("address", "streetone")))));
+
+        verify(mockCustomerRepository).save(customerArgumentCaptor.capture());
+
+        assertThat(response.getStatus(),is(201));
+
+        assertThat(customerArgumentCaptor.getValue().getName(),is("customer"));
+        assertThat(customerArgumentCaptor.getValue().getAddress(),is("streetone"));
+
 
     }
 }
