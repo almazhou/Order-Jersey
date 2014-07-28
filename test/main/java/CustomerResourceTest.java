@@ -108,7 +108,6 @@ public class CustomerResourceTest extends JerseyTest {
 
         assertThat(customerArgumentCaptor.getValue().getName(),is("customer"));
         assertThat(customerArgumentCaptor.getValue().getAddress(),is("streetone"));
-
-
     }
+
 }
