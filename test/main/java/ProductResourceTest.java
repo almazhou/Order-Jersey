@@ -116,18 +116,7 @@ public class ProductResourceTest extends JerseyTest {
         when(mockProductRepository.getProductById(PROUDCT_ID)).thenReturn(product0);
 
         Response response = target("/products/"+PROUDCT_ID).request(MediaType.APPLICATION_XML_TYPE).get();
-//
-        System.out.println(response.getStatus());
         assertThat(response.getStatus(), is(200));
-//
-//        Map product = response.readEntity(Map.class);
-//
-//        assertThat(product.get("name"), is("test"));
-//
-//        assertThat(product.get("price"), is("23.0"));
-//
-//        assertThat(((String) (product.get("uri"))).contains("/products/"+PROUDCT_ID), is(true));
-
     }
 
 
