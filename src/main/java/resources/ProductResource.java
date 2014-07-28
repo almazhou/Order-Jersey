@@ -19,7 +19,7 @@ public class ProductResource {
     ProductRepository productRepository;
 
     @GET
-    @Produces(MediaType.APPLICATION_JSON)
+    @Produces({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
     public List<ProductJson> getAllProducts(@Context UriInfo uriInfo) {
         List<Product> allProducts = productRepository.getAllProducts();
         List<ProductJson> productJsons = allProducts.stream().map(product -> new ProductJson(product, uriInfo)).collect(Collectors.toList());
@@ -41,7 +41,7 @@ public class ProductResource {
 
     @GET
     @Path("/{id}")
-    @Produces(MediaType.APPLICATION_JSON)
+    @Produces({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
     public ProductJson getProductById(@PathParam("id") String id, @Context UriInfo uriInfo) {
 
         Product productById = productRepository.getProductById(id);

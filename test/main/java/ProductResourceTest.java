@@ -20,6 +20,7 @@ import resources.ProductResource;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.Form;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.Arrays;
 import java.util.List;
@@ -29,6 +30,7 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static server.App.createMoxyJsonResolver;
 
 
 @RunWith(MockitoJUnitRunner.class)
@@ -51,7 +53,7 @@ public class ProductResourceTest extends JerseyTest {
             }
         };
 
-        return new ResourceConfig().register(ProductResource.class).register(binder).register(RecordNotFoundExceptionHandler.class);
+        return new ResourceConfig().register(ProductResource.class).register(binder).register(createMoxyJsonResolver()).register(RecordNotFoundExceptionHandler.class);
     }
 
     @Test
@@ -101,6 +103,30 @@ public class ProductResourceTest extends JerseyTest {
         assertThat(product.get("price"), is("23.0"));
 
         assertThat(((String) (product.get("uri"))).contains("/products/"+PROUDCT_ID), is(true));
+
+    }
+    @Test
+    public void should_return_200_for_get_1_product_with_xml() throws Exception {
+        Product product0 = ProductBuilder.buildProduct(PROUDCT_ID, "test");
+
+        Pricing pricing = PriceBuilder.buildPricing(PRICING_ID, 23.0, new DateTime());
+
+        ProductBuilder.buildPricing(product0,pricing);
+
+        when(mockProductRepository.getProductById(PROUDCT_ID)).thenReturn(product0);
+
+        Response response = target("/products/"+PROUDCT_ID).request(MediaType.APPLICATION_XML_TYPE).get();
+//
+        System.out.println(response.getStatus());
+        assertThat(response.getStatus(), is(200));
+//
+//        Map product = response.readEntity(Map.class);
+//
+//        assertThat(product.get("name"), is("test"));
+//
+//        assertThat(product.get("price"), is("23.0"));
+//
+//        assertThat(((String) (product.get("uri"))).contains("/products/"+PROUDCT_ID), is(true));
 
     }
 
